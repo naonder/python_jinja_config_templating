@@ -1,0 +1,45 @@
+# To be used to create a base router configuration
+# Note, this can rely on other documents depending on routing protocols selected/used
+
+# Optional, but recommended and will be needed for generating RSA keys
+# hostname: hostname
+
+
+# Required - all masks default /32
+# loopbacks:
+#   - loopback: 10
+#     address: 1.1.1.1
+
+
+# Optional
+# snmp_location: location
+
+
+# Optional
+# vrfs:
+#   - vrf: INET
+#     address_family: ipv4
+
+# Optional, but highly recommended for obvious reasons
+# interfaces:
+#   - interface: Gi0/0/0
+  #   address: 10.127.128.5
+  #   vrf: Optional
+  #   subnet_mask: 255.255.255.252
+  #   description: PR01NSW-Core G2/0/12
+
+
+# Optional, but recommended       
+# prefix_lists:
+  #  - prefix_list: out
+  #    sequence: 10
+  #    permit: True
+  #    prefix: 10.10.10.0/24
+
+# Optional, but recommended
+# Can only be used to match prefix lists currently, make sure this is the same in the BGP config  
+# route_maps:
+   # - route_map: out
+   #   sequence: 10
+   #   permit: True
+   #   match: out

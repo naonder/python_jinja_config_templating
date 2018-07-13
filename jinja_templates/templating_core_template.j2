@@ -1,0 +1,132 @@
+{% if hostname %}
+hostname {{ hostname }}
+{% endif %}
+no service pad
+no service tcp-small-servers 
+no service udp-small-servers
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service compress-config
+service unsupported-transceiver
+!
+logging buffered 16384 6
+no logging console
+no logging monitor
+!
+!
+!
+!
+{% if loopbacks %}
+{% for loopback in loopbacks %}
+interface Loopback{{loopback.loopback}}
+ ip address {{loopback.address}} 255.255.255.255
+!
+{% endfor %}
+{% endif %}
+!
+ip radius source-interface Loopback0
+!
+no vstack
+ip http client source-interface Loopback0
+!
+!
+!
+no ip source-route
+!
+archive
+ log config
+  logging enable
+  hidekeys
+!
+vtp mode transparent
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+{% if vlans %}
+spanning-tree vlan {% for vlan in vlans %}{{ vlan.vlan_id }}{% if not loop.last %},{% endif %}{% endfor %} root primary
+{% endif %}
+!
+!
+port-channel load-balance src-dst-mixed-ip-port
+! if can't then do src-dst-ip
+!
+vlan internal allocation policy ascending
+!
+{% if vlans %}
+{% for vlan in vlans %}
+vlan {{ vlan.vlan_id }}
+ name {{ vlan.vlan_name }}
+!
+{% endfor %}
+{% endif %}
+!
+!
+!
+crypto key generate rsa modulus 2048
+ip ssh time-out 60
+ip ssh source-interface Loopback0
+ip ssh version 2
+!
+{% if routed_interfaces %}
+{% for routed_interface in routed_interfaces %}
+interface {{routed_interface.interface}}
+ no switchport
+ description {{routed_interface.description}}
+ ip address {{routed_interface.address}} {{routed_interface.subnet_mask}}
+!
+{% endfor %}
+{% endif %}
+!
+{% for vlan in vlans if vlan.vlan_address %}
+interface Vlan{{vlan.vlan_id}}
+ description {{vlan.vlan_name}}
+ ip address {{vlan.vlan_address}} {{vlan.vlan_subnet}}
+ {% if helper_addresses %}
+ {% for helper_address in helper_addresses %}
+ ip helper-address {{helper_address}}
+ {% endfor %}
+ {% endif %}
+!
+{% endfor %}
+
+{% include "templating_eigrp_config.txt" ignore missing %}
+
+{% include "templating_ospf_config.txt" ignore missing %}
+
+{% include "templating_bgp_config.txt" ignore missing %}
+
+ip scp server enable
+ip bgp-community new-format
+!
+!
+!
+snmp-server system-shutdown
+{% if snmp_location %}
+snmp-server location {{snmp_location}}
+{% endif %}
+!
+!
+!
+no ip http server
+no ip http secure-server
+!
+errdisable recovery cause arp-inspection
+errdisable recovery cause bpduguard
+errdisable recovery interval 600
+!
+!
+!
+line con 0
+ exec-timeout 15 0
+!
+line vty 0 4
+ exec-timeout 15 0
+ transport preferred ssh
+ transport input ssh
+ transport output ssh
+line vty 5 15
+ exec-timeout 15 0
+ transport preferred ssh
+ transport input ssh
+ transport output ssh
+!

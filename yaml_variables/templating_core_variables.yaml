@@ -1,0 +1,31 @@
+# Optional, but recommended and will be needed to generate the RSA key
+# hostname: hostname
+
+# Optional, but highly recommended as it'll be used for BGP peering
+# loopbacks:
+#   - loopback: 10
+#     address: 1.1.1.1
+
+
+# Optional
+# snmp_location: location
+
+# Optional, but will be used to provide DHCP forwarding on all the SVIs
+# helper_addresses:
+#   - 1.1.1.1
+#   - 2.2.2.2
+
+# While optional, it's pretty much guaranteed you'll need them
+# Addresses are purely optional
+#vlans:
+   #- vlan_id: 10
+   #  vlan_name: MGMT
+   #  vlan_address: 10.1.1.1
+   #  vlan_subnet: 255.255.255.0
+     
+# Again, optional but should be used in place of SVIs for point-to-point links   
+# routed_interfaces:
+#    - interface: t1/0/48
+#      address: 10.96.100.3
+#      subnet_mask: 255.255.255.254
+#      description: MN02NRT-M G0/0/2

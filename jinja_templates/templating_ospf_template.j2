@@ -1,0 +1,27 @@
+router ospf {{process_id}}
+ {% if router_id %}
+ router-id {{router_id}}
+ {% endif %}
+ passive-interface default
+ {% if active_interfaces %}
+ {% for interface in active_interfaces %}
+ no passive-interface {{interface}}
+ {% endfor %}
+ {% endif %}
+ {% for network in networks if networks %}
+ network {{network.network}} {{network.wild_card}} area {{network.area}} {{network.stub if network.stub == True}}
+ {% endfor %}
+ {% if redistribute.connected.redistribute %}
+ redistribute connected subnets
+ {% endif %}
+ {% if redistribute.static.redistribute %}
+ redistribute static subnets
+ {% endif %}
+ {% if redistribute.bgp.redistribute %}
+ redistribute bgp {{redistribute.bgp.asn}} subnets
+ {% endif %}
+ {% if redistribute.eigrp.redistribute %}
+ redistribute eigrp {{redistribute.eigrp.asn}} subnets
+ {% endif %}
+ nsf
+!

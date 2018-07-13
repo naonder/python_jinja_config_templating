@@ -1,0 +1,35 @@
+# To be used for pushing OSPF config changes. Formatting and spelling is important.
+
+# Mandatory
+# process_id: 1
+
+# Optional, but recommended
+# router_id: 1.1.1.1
+
+# Mandatory, best practice is to use site summary unless using multiple areas
+# Stub flag can also be used. Only stub areas supported
+# networks:
+#   - network: 1.1.1.0
+#     wild_card: 0.0.0.255
+#     area: 1
+#     stub: True or False (mandatory to declare true or false)
+
+
+# Optional, but by default all interfaces are passive
+# active_interfaces:
+#   - g1/0/1
+#   - g2/0/1
+
+
+# Optional, however need to specify True or False
+# redistribute:
+#     connected: 
+#       redistribute: True
+#      static: 
+#       redistribute: False
+#      bgp: 
+#       redistribute: True
+#       asn: 2034
+#      eigrp: 
+#       redistribute: False
+#       asn: 10

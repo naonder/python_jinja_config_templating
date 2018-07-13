@@ -1,0 +1,35 @@
+# Optional, but recommended and will be needed to generate the RSA key
+# hostname: test-switch
+
+# Optional
+# snmp_location: location
+
+# While optional, it's pretty much guaranteed you'll need them
+# Addresses are purely optional
+# vlans:
+#     - vlan_id: 10
+#       vlan_name: MGMT
+#       vlan_address: 10.1.1.11
+#       vlan_subnet: 255.255.255.0
+#     - vlan_id: 100
+#       vlan_name: Users
+#     - vlan_id: 500
+#       vlan_name: Voice
+#    - vlan_id: 966
+#       vlan_name: User_Quarantine
+
+# Input a default gateway      
+# default_gateway: 10.1.1.1
+      
+# If an uplink is in a port-channel, don't forget to also include the port-channel itself here
+# trunks:
+#     - trunk: g1/0/49
+#       description: Uplink
+#       port_channel: 10
+#       mode: active
+#     - trunk: g3/0/49
+#       description: Uplink
+#       port_channel: 10
+#       mode: active
+#     - trunk: po10
+#       description: Port-channel Uplink

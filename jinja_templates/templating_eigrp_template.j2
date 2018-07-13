@@ -1,0 +1,75 @@
+{% if named_instance %}
+router eigrp {{named_instance}}
+!
+address-family ipv4 unicast autonomous-system {{ as_number }}
+  !
+  af-interface default
+   shutdown
+  exit-af-interface
+  !
+  {% if active_interfaces %}
+  {% for interface in active_interfaces %}
+  af-interface {{interface}}
+   no shutdown
+  exit-af-interface
+  !
+  {% endfor %}
+  {% endif %}
+  topology base
+  {% if redistribute.connected.redistribute %}
+   redistribute connected
+  {% endif %}
+  {% if redistribute.static.redistribute %}
+   redistribute static
+  {% endif %}
+  {% if redistribute.bgp.redistribute %}
+   redistribute bgp {{redistribute.bgp.asn}}
+  {% endif %}
+  {% if redistribute.ospf.redistribute %}
+   redistribute ospf {{redistribute.ospf.process_id}}
+  {% endif %}
+  {% if redistribute.bgp.redistribute or redistribute.ospf.redistribute %}
+   default-metric 100 100 250 1 1500
+  {% endif %}
+  exit-af-topology
+  {% for network in networks if networks %}
+  network {{network.network}} {{network.wild_card}}
+  {% endfor %}
+  {% if router_id %}
+  eigrp router-id {{router_id}}
+  {% endif %}
+  nsf
+ exit-address-family
+!
+{% else %}
+router eigrp {{as_number}}
+ {% if router_id %}
+ eigrp router-id {{router_id}}
+ {% endif %}
+ passive-interface default
+ {% if active_interfaces %}
+ {% for interface in active_interfaces %}
+ no passive-interface {{interface}}
+ {% endfor %}
+ {% endif %}
+ {% for network in networks if networks %}
+ network {{network.network}} {{network.wild_card}}
+ {% endfor %}
+ {% if redistribute.connected.redistribute %}
+ redistribute connected
+ {% endif %}
+ {% if redistribute.static.redistribute %}
+ redistribute static
+ {% endif %}
+ {% if redistribute.bgp.redistribute %}
+ redistribute bgp {{redistribute.bgp.asn}}
+ {% endif %}
+ {% if redistribute.ospf.redistribute %}
+ redistribute ospf {{redistribute.ospf.process_id}}
+ {% endif %}
+ {% if redistribute.bgp.redistribute or redistribute.ospf.redistribute %}
+ default-metric 100 100 250 1 1500
+ {% endif %}
+ nsf
+!
+{% endif %}

@@ -1,0 +1,121 @@
+snmp-server system-shutdown
+!
+{% if hostname %}
+hostname {{hostname}}
+{% endif %}
+!
+cfs eth distribute
+{% if features %}
+{% for feature in features %}
+feature {{feature}}
+{% endfor %}
+{% endif %}
+!
+!
+!
+crypto key param rsa label {{hostname}}.domain.com modulus 2048 
+errdisable recovery interval 600
+errdisable recovery cause bpduguard
+copp profile strict
+{% if ssh_radius_source_interface %}
+ip ssh source-interface {{ssh_radius_source_interface}}
+{% endif %}
+{% if snmp_location %}
+snmp-server location {{snmp_location}}
+{% endif %}
+{% if vlans %}
+{% for vlan in vlans %}
+vlan {{vlan.vlan}}
+ {% if vlan.vlan_name %}
+ name {{vlan.vlan_name}}
+ {% endif %}
+{% endfor %}
+{% endif %}
+{% if vlans and spanning_tree_root %}
+spanning-tree vlan {% for vlan in vlans %}{{ vlan.vlan_id }}{% if not loop.last %},{% endif %}{% endfor %} root primary
+{% endif %}
+!
+!
+{% if svis %}
+{% for svi in svis %}
+interface Vlan{{svi.svi}}
+   {% if svi.description %}
+   description {{svi.description}}
+   {% endif %}
+   ip address {{svi.address}}{{svi.mask}}
+   {% if hsrp %}
+   hsrp {{svi.hsrp_instance}}
+     {% if svi.preempt %}
+	 preempt
+	 {% endif %}
+	 ip {{svi.hsrp_address}}
+	 {% if svi.track %}
+	 track {{svi.track}} decrement {{svi.decrement}}
+	 {% endif %}
+   {% endif %}
+   {% if svi.dhcp_relay %}
+   ip dhcp relay address {{svi.dhcp_relay}}
+   {% endif %}
+{% endfor %}
+{% endif %}
+!
+{% if port_channels %}
+{% for port_channel in port_channels %}
+interface port-channel{{port_channel.port_channel}}
+  {% if port_channel.mode == 'switchport' %}
+  switchport
+  switchport mode {{port_channel.switchport_mode}}
+  {% if port_channel.vpc_peer_link %}
+  vpc peer-link
+  spanning-tree port type network
+  {% endif %}
+  {% endif %}
+!
+{% endfor %}
+{% endif %}
+!
+{% if interfaces %}
+{% for interface in interfaces %}
+interface {{interface.interface}}
+   no shutdown
+   {% if interface.description %}
+   description {{interface.description}}
+   {% endif %}
+   {% if interface.mode == 'switchport' %}
+   switchport
+   switchport mode {{interface.switchport_mode}}
+   {% if interface.switchport_mode == 'access' %}
+   switchport access {{interface.access_vlan}}
+   spanning-tree port type edge
+   {% endif %}
+   {% if interface.channel_group %}
+   channel-group {{interface.channel_group}} mode active
+   {% endif %}
+   {% else %}
+   {% if interface.vrf %}
+   vrf member {{interface.vrf}}
+   {% endif %}
+   ip address {{interface.address}}
+   {% if interface.ospf == True %}
+   ip router ospf {{interface.ospf_process}} area {{interface.ospf_area}}
+   {% endif %}
+   {% endif %}
+!
+{% endfor %}
+{% endif %}
+!
+{% if loopbacks %}
+{% for loopback in loopbacks %}
+interface Loopback{{loopback.loopback}}
+ ip address {{loopback.address}} 255.255.255.255
+!
+{% endfor %}
+{% endif %}
+!
+line console
+line vty
+{% if ssh_radius_source_interface %}
+ip radius source-interface {{ssh_radius_source_interface}}
+{% endif %}
+no logging monitor
+no logging console

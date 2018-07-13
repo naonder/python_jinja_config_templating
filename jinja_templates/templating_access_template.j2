@@ -1,0 +1,112 @@
+hostname {{hostname}}
+no service pad
+no service tcp-small-servers 
+no service udp-small-servers
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service compress-config
+service unsupported-transceiver
+!
+logging buffered 16384 6
+no logging console
+no logging monitor
+!
+!
+aaa new-model
+!
+!
+aaa session-id common
+!
+!
+{% for vlan in vlans if vlan.vlan_address %}
+int vlan{{vlan.vlan_id}}
+ ip address {{vlan.vlan_address}} {{vlan.vlan_subnet}}
+!
+{% endfor %}
+no vstack
+ip http client source-interface Vlan10
+ip radius source-interface Vlan10
+!
+!
+!
+!
+archive
+ log config
+  logging enable
+  hidekeys
+!
+vtp mode transparent
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+!
+port-channel load-balance src-dst-mixed-ip-port
+! if can't then do src-dst-ip
+!
+!
+vlan internal allocation policy ascending
+!
+{% for vlan in vlans %}
+vlan {{vlan.vlan_id}}
+ name {{vlan.vlan_name}}
+!
+{% endfor %}
+!
+!
+!
+crypto key generate rsa modulus 2048
+ip ssh time-out 60
+ip ssh source-interface Vlan10
+ip ssh version 2
+!
+!
+{% for trunk in trunks %}
+interface {{trunk.trunk}}
+ description {{trunk.description}}
+ switchport mode trunk
+ switchport nonegotiate
+ {% if trunk.port_channel %}
+ channel-group {{trunk.port_channel}} mode {{trunk.mode}}
+ {% endif %}
+ mls qos trust dscp
+ srr-queue bandwidth share 1 30 35 5
+ priority-queue out
+!
+{% endfor %}
+!
+!
+!
+ip scp server enable
+!
+!
+!
+ip default-gateway {{default_gateway}}
+!
+!
+!
+no ip http server
+no ip http secure-server
+!
+errdisable recovery cause arp-inspection
+errdisable recovery cause bpduguard
+errdisable recovery interval 600
+!
+ntp source Vlan10
+!
+!
+line con 0
+ exec-timeout 15 0
+!
+line vty 0 4
+ exec-timeout 15 0
+ transport preferred ssh
+ transport input ssh
+ transport output ssh
+line vty 5 15
+ exec-timeout 15 0
+ transport preferred ssh
+ transport input ssh
+ transport output ssh
+!
+end

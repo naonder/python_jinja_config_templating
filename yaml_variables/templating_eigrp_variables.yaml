@@ -1,0 +1,36 @@
+# To be used for pushing EIGRP config changes. Formatting and spelling is important.
+
+# Optional
+# named_instance: test
+
+# Mandatory
+# as_number: 10
+
+# Optional, but recommended
+# router_id: 1.1.1.1
+
+# Mandatory
+# networks:
+#   - network: 10.10.10.0
+#     wild_card: 0.0.0.255
+
+# Mandatory if using named mode, however, will still skip over if not defined
+# Keep in mind that with named mode, all interfaces are shutdown per our standard
+# In classic mode, all interfaces are set to passive
+# active_interfaces:
+#   - G0/0/1
+#   - G0/0/2
+#   - Lo0
+
+# Optional, however need to specify True or False
+# redistribute:
+#      connected: 
+#       redistribute: True
+#      static: 
+#       redistribute: False
+#      bgp: 
+#       redistribute: False
+#       asn: 
+#      ospf: 
+#       redistribute: False
+#       process_id: 

@@ -1,0 +1,85 @@
+# To be used to create a base nexus configuration
+
+# Hostname is optional, but recommended
+# hostname: hostname
+
+
+# Features are optional
+# features:
+    # - lacp
+    # - bgp
+    # - etc
+
+# VRF is optional
+# vrfs:
+    # - vrf: test
+    
+# VPC domain is optional, however all options must exist if using VPC
+# vpcs:
+    # - vpc_domain: 1
+    #   role_priority: 1
+    #   peer_destination: 1.1.1.1
+    #   peer_source: 1.1.1.2
+    #   vrf: VPCKA
+
+# SSH/Radius source interface is optional
+# ssh_radius_source_interface: vlan 10
+
+
+# SNMP location is optional
+# snmp_location: location
+
+
+# VLANs and names are optional
+# vlans:
+    # - vlan: id
+    #   name: name
+    
+# Spanning-tree root designation is optional
+# spanning_tree_root: True or False
+
+
+# SVIs are optional, but highly recommended - make sure they match vlans created prior
+# All options are shown and are optional
+# svis:
+    # - svi: 10
+    #   description: test
+    #   address: 1.1.1.254
+    #   mask: /24
+    #   dhcp_relay: 10.96.10.25
+    #   hsrp: True (if False, then next bit is ignored)
+    #   hsrp_instance: 10
+    #   preempt: True or False
+    #   hsrp_address: 1.1.1.1
+    #   track: 10
+    #   decrement: 90
+    
+# Loopbacks are optional, but recommended if device is running L3. All loopbacks default to using /32 mask
+# loopbacks:
+    # - loopback: 10
+    #   address: 192.0.2.1
+    
+      
+# Port-channel interfaces are optional
+# port_channels:
+    # - port_channel: 1
+    #   mode: routed or switchport
+    #   switchport_mode: trunk or access (ignored if routed)
+    #   vpc_peer_link: True or False
+
+    
+# Interfaces are optional, but can be set up ahead of time. Both routed and switchports can be configured from here
+# Only link bonding type supported right now is LACP w/ mode active
+# interfaces:
+    # - interface: e1/1
+    #   description: test port
+    #   mode: switchport or routed
+    #   switchport_mode: trunk or access (ignored if routed)
+    #   access_vlan: 10 (ignored if trunk)
+    #   channel_group: 1
+    #   vrf: VPCKA
+    #   address: 10.10.10.10/30
+    #   ospf: True or False
+    #   ospf_process: 10 (ignored if ospf is False)
+    #   ospf_area: 0.0.0.0 (ignored if ospf is False)
+    
